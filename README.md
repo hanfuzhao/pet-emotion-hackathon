@@ -18,10 +18,12 @@ A binary pet-emotion classifier (happy vs. unhappy) that uses transfer learning 
 
 The pitch: we train two models on the same data with the same seed. One sees only resize + flip; the other sees augmentations that mimic the actual variation in user-uploaded pet photos (lighting, blur, rotation, perspective, occlusion). Then we evaluate both on a **corrupted** held-out test set and watch the augmented model hold its ground while the baseline collapses.
 
-## Live demo
+## Live demo + repo
 
-[Gradio app on Hugging Face Spaces](https://huggingface.co/spaces/YOUR-USERNAME/pet-emotion-robustness)
-*(Update this link after deploying — see "Deploy to Hugging Face Spaces" below.)*
+- **Live app:** https://huggingface.co/spaces/HanfuZhao781/pet-emotion-robustness
+- **GitHub repo:** https://github.com/hanfuzhao/pet-emotion-hackathon
+
+The Space takes a minute to wake up if it's been idle.
 
 ## Problem statement
 
