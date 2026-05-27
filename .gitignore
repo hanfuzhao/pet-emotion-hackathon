@@ -25,3 +25,5 @@ kaggle.json
 
 # Personal
 pitch.md
+assets/pitch.pptx
+scripts/build_pitch_pptx.py
