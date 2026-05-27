@@ -1,7 +1,7 @@
 import torch.nn as nn
 from torchvision import models
 
-NUM_CLASSES = 2
+NUM_CLASSES = 4
 
 
 def build_model(num_classes=NUM_CLASSES):
