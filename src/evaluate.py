@@ -98,8 +98,16 @@ _eval_tx = transforms.Compose([
 ])
 
 
+def _pick_device() -> str:
+    if torch.cuda.is_available():
+        return "cuda"
+    if torch.backends.mps.is_available():
+        return "mps"
+    return "cpu"
+
+
 def load_checkpoint(ckpt_path: str | Path, device: str | None = None) -> torch.nn.Module:
-    device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+    device = device or _pick_device()
     ckpt = torch.load(ckpt_path, map_location=device, weights_only=False)
     model = build_model(num_classes=len(ckpt["class_names"]))
     model.load_state_dict(ckpt["state_dict"])

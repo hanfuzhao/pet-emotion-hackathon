@@ -60,13 +60,21 @@ def train(
     finetune_lr: float = 1e-4,
     seed: int = 42,
     device: str | None = None,
+    num_workers: int = 0,
 ) -> dict:
-    device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+    if device is None:
+        if torch.cuda.is_available():
+            device = "cuda"
+        elif torch.backends.mps.is_available():
+            device = "mps"
+        else:
+            device = "cpu"
     print(f"[device] {device}")
     print(f"[mode]   {train_mode}")
 
     train_loader, val_loader, test_loader = build_loaders(
         root=data_dir, batch_size=batch_size, train_mode=train_mode, seed=seed,
+        num_workers=num_workers,
     )
     print(f"[data]   train={len(train_loader.dataset)} "
           f"val={len(val_loader.dataset)} test={len(test_loader.dataset)}")
