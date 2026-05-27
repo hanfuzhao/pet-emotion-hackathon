@@ -34,8 +34,6 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 MODELS_DIR = ROOT / "models"
 EXAMPLES_DIR = ROOT / "examples"
 
-EMOJI = {"angry": "😠", "happy": "😊", "sad": "😢", "other": "🤔"}
-
 _tx = transforms.Compose([
     transforms.Resize(256),
     transforms.CenterCrop(IMG_SIZE),
@@ -74,11 +72,10 @@ def _render_bars(probs, accent):
         is_top = cls == top_class
         bar_color = accent if is_top else "#D5D5D5"
         text_weight = "700" if is_top else "500"
-        emoji = EMOJI.get(cls, "•")
         rows.append(f"""
-            <div style="margin-bottom:8px;">
-              <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:{text_weight};color:#333;margin-bottom:3px;">
-                <span>{emoji}&nbsp;&nbsp;{cls}</span>
+            <div style="margin-bottom:10px;">
+              <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:{text_weight};color:#333;margin-bottom:4px;text-transform:capitalize;">
+                <span>{cls}</span>
                 <span>{pct}%</span>
               </div>
               <div style="background:#EEE;border-radius:4px;height:8px;overflow:hidden;">
