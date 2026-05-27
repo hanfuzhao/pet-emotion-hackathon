@@ -1,16 +1,6 @@
-"""Run the robustness comparison after both models are trained.
-
-Saves:
-  - assets/robustness_results.json   (raw per-corruption-x-severity accuracies)
-  - assets/robustness_comparison.png (six-panel comparison plot)
-  - assets/aug_samples.png           (random augmented training samples)
-  - assets/summary.json              (headline numbers for README/pitch)
-"""
-
-from __future__ import annotations
-
 import json
 import os
+import sys
 from pathlib import Path
 
 os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
@@ -19,10 +9,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
-import torch
 
 ROOT = Path(__file__).resolve().parent.parent
-import sys
 sys.path.insert(0, str(ROOT))
 
 from src.data import PetEmotionDataset, get_transforms, IMAGENET_MEAN, IMAGENET_STD
@@ -34,7 +22,6 @@ def main():
     assets.mkdir(exist_ok=True)
     models_dir = ROOT / "models"
 
-    # 1) Sample augmentation grid for the pitch
     print("[viz] augmentation samples")
     ds = PetEmotionDataset(root=ROOT / "data" / "raw", transform=None)
     tx = get_transforms("augmented")
@@ -49,8 +36,7 @@ def main():
     fig, axes = plt.subplots(2, 4, figsize=(14, 7))
     for ax in axes.flat:
         img, label = ds[int(rng.integers(len(ds)))]
-        aug = tx(img)
-        ax.imshow(denorm(aug))
+        ax.imshow(denorm(tx(img)))
         ax.set_title(["unhappy", "happy"][label])
         ax.axis("off")
     plt.suptitle("Random samples through the augmented training pipeline")
@@ -58,8 +44,7 @@ def main():
     plt.savefig(assets / "aug_samples.png", dpi=110, bbox_inches="tight")
     plt.close()
 
-    # 2) Robustness matrix
-    print("[eval] robustness matrix (baseline vs augmented)")
+    print("[eval] robustness matrix")
     results = compare_models(
         baseline_ckpt=models_dir / "baseline.pt",
         augmented_ckpt=models_dir / "augmented.pt",
@@ -67,7 +52,6 @@ def main():
     )
     (assets / "robustness_results.json").write_text(json.dumps(results, indent=2))
 
-    # 3) Comparison plot
     print("[viz] comparison plot")
     corruptions = list(results["baseline"].keys())
     fig, axes = plt.subplots(2, 3, figsize=(15, 8), sharey=True)
@@ -88,20 +72,16 @@ def main():
     plt.savefig(assets / "robustness_comparison.png", dpi=120, bbox_inches="tight")
     plt.close()
 
-    # 4) Headline summary
     summary = {}
     for name in ("baseline", "augmented"):
         all_accs = [v for c in results[name].values() for v in c.values()]
-        summary[f"{name}_clean_acc"] = results[name]["brightness"][0]  # sev=0 ~ clean
+        summary[f"{name}_clean_acc"] = results[name]["brightness"][0]
         summary[f"{name}_mean_robust_acc"] = float(np.mean(all_accs))
     summary["delta_mean_robust_acc"] = (
         summary["augmented_mean_robust_acc"] - summary["baseline_mean_robust_acc"]
     )
     summary["per_corruption_severity4"] = {
-        c: {
-            "baseline": results["baseline"][c][4],
-            "augmented": results["augmented"][c][4],
-        }
+        c: {"baseline": results["baseline"][c][4], "augmented": results["augmented"][c][4]}
         for c in CORRUPTIONS
     }
     (assets / "summary.json").write_text(json.dumps(summary, indent=2))
