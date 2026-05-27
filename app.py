@@ -17,6 +17,8 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 MODELS_DIR = ROOT / "models"
 EXAMPLES_DIR = ROOT / "examples"
 
+EMOJI = {"angry": "😠", "happy": "😊", "sad": "😢", "other": "🤔"}
+
 _tx = transforms.Compose([
     transforms.Resize(256),
     transforms.CenterCrop(IMG_SIZE),
@@ -41,12 +43,40 @@ def _model(name):
 def _infer(model, img):
     x = _tx(img).unsqueeze(0).to(DEVICE)
     probs = F.softmax(model(x), dim=1)[0].cpu().tolist()
-    return {CLASS_NAMES[i]: float(probs[i]) for i in range(len(CLASS_NAMES))}
+    return [(CLASS_NAMES[i], float(probs[i])) for i in range(len(CLASS_NAMES))]
+
+
+def _render_bars(probs, accent):
+    if not probs:
+        return '<div style="color:#999;font-size:13px;padding:8px;">no model loaded</div>'
+    ranked = sorted(probs, key=lambda x: -x[1])
+    top_class = ranked[0][0]
+    rows = []
+    for cls, p in ranked:
+        pct = int(round(p * 100))
+        is_top = cls == top_class
+        bar_color = accent if is_top else "#D5D5D5"
+        text_weight = "700" if is_top else "500"
+        emoji = EMOJI.get(cls, "•")
+        rows.append(f"""
+            <div style="margin-bottom:8px;">
+              <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:{text_weight};color:#333;margin-bottom:3px;">
+                <span>{emoji}&nbsp;&nbsp;{cls}</span>
+                <span>{pct}%</span>
+              </div>
+              <div style="background:#EEE;border-radius:4px;height:8px;overflow:hidden;">
+                <div style="background:{bar_color};height:100%;width:{pct}%;transition:width 0.3s;"></div>
+              </div>
+            </div>
+        """)
+    return f'<div style="padding:8px 4px;">{"".join(rows)}</div>'
 
 
 def predict(image, corruption, severity):
     if image is None:
-        return None, {}, {}, "👈 Pick an example below or upload your own pet photo."
+        empty = '<div style="color:#999;font-size:13px;padding:20px;text-align:center;">waiting for a photo…</div>'
+        return None, empty, empty, "👈 Pick an example below or upload your own pet photo."
+
     if image.mode != "RGB":
         image = image.convert("RGB")
 
@@ -57,22 +87,23 @@ def predict(image, corruption, severity):
 
     aug = _model("augmented")
     base = _model("baseline")
-    aug_pred = _infer(aug, image_in) if aug else {}
-    base_pred = _infer(base, image_in) if base else {}
+    aug_probs = _infer(aug, image_in) if aug else []
+    base_probs = _infer(base, image_in) if base else []
 
-    if not aug or not base:
-        msg = "⚠️ Missing a model checkpoint."
-    elif corruption == "none" or int(severity) == 0:
+    aug_html = _render_bars(aug_probs, "#5CB85C")
+    base_html = _render_bars(base_probs, "#D9534F")
+
+    top_a = max(aug_probs, key=lambda x: x[1])[0] if aug_probs else "?"
+    top_b = max(base_probs, key=lambda x: x[1])[0] if base_probs else "?"
+
+    if corruption == "none" or int(severity) == 0:
         msg = "Now pick a corruption and drag severity up to 4. Watch the **baseline** drift while the **augmented** model holds steady."
+    elif top_a == top_b:
+        msg = f"Both models still agree: **{top_a}**. Push severity higher to see them split."
     else:
-        top_a = max(aug_pred, key=aug_pred.get) if aug_pred else "?"
-        top_b = max(base_pred, key=base_pred.get) if base_pred else "?"
-        if top_a == top_b:
-            msg = f"Both models still agree: **{top_a}**. Push severity higher to see them diverge."
-        else:
-            msg = f"📊 **They disagree!** Augmented says **{top_a}**, baseline says **{top_b}**. This is exactly the kind of split augmentation is meant to prevent."
+        msg = f"📊 **They disagree.** Augmented says **{top_a}**, baseline says **{top_b}**. That split is exactly what augmentation is meant to prevent."
 
-    return image_in, aug_pred, base_pred, msg
+    return image_in, aug_html, base_html, msg
 
 
 CUSTOM_CSS = """
@@ -108,25 +139,13 @@ CUSTOM_CSS = """
 }
 .gr-button-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3); }
 
-#aug-label .label-name { color: #2d8a45 !important; }
-#base-label .label-name { color: #c43d3a !important; }
-
-#status-msg {
-    background: #FFF8E7;
-    border-left: 4px solid #FFD93D;
-    padding: 14px 18px;
-    border-radius: 8px;
-    font-size: 15px;
-    line-height: 1.5;
-    margin-top: 8px;
-}
-
 #aug-card, #base-card {
     border-radius: 12px;
-    padding: 4px;
+    padding: 16px;
     border: 2px solid transparent;
+    margin-top: 0;
 }
-#aug-card { border-color: #6BCB77; background: #F0FBF2; }
+#aug-card { border-color: #5CB85C; background: #F0FBF2; }
 #base-card { border-color: #D9534F; background: #FDF2F2; }
 
 .model-tag {
@@ -137,10 +156,20 @@ CUSTOM_CSS = """
     font-weight: 700;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
-.aug-tag { background: #6BCB77; color: white; }
+.aug-tag { background: #5CB85C; color: white; }
 .base-tag { background: #D9534F; color: white; }
+
+#status-msg {
+    background: #FFF8E7;
+    border-left: 4px solid #FFD93D;
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-size: 15px;
+    line-height: 1.5;
+    margin-top: 12px;
+}
 
 footer { display: none !important; }
 """
@@ -155,8 +184,10 @@ THEME = gr.themes.Soft(
     block_border_width="1px",
     block_shadow="0 1px 3px rgba(0,0,0,0.04)",
     block_radius="12px",
-    input_border_color="#E5E7EB",
 )
+
+
+EMPTY_BARS = '<div style="color:#999;font-size:13px;padding:20px;text-align:center;">waiting for a photo…</div>'
 
 
 def build_ui():
@@ -176,14 +207,13 @@ def build_ui():
                 gr.Markdown("### 1. Pick a photo")
                 inp = gr.Image(
                     type="pil",
-                    label=None,
                     show_label=False,
                     height=300,
                     sources=["upload", "clipboard"],
                 )
-                example_paths = [
+                example_paths = sorted(
                     str(p) for p in (EXAMPLES_DIR.glob("*.jpg") if EXAMPLES_DIR.exists() else [])
-                ]
+                )
                 if example_paths:
                     gr.Examples(
                         examples=example_paths,
@@ -213,25 +243,13 @@ def build_ui():
                     height=300,
                     interactive=False,
                 )
-
                 with gr.Row():
                     with gr.Column(elem_id="aug-card"):
                         gr.HTML('<div class="model-tag aug-tag">✓ Augmented</div>')
-                        aug_out = gr.Label(
-                            label="",
-                            num_top_classes=4,
-                            show_label=False,
-                            elem_id="aug-label",
-                        )
+                        aug_out = gr.HTML(EMPTY_BARS)
                     with gr.Column(elem_id="base-card"):
                         gr.HTML('<div class="model-tag base-tag">✗ Baseline</div>')
-                        base_out = gr.Label(
-                            label="",
-                            num_top_classes=4,
-                            show_label=False,
-                            elem_id="base-label",
-                        )
-
+                        base_out = gr.HTML(EMPTY_BARS)
                 status = gr.Markdown(
                     "👈 Pick an example or upload your own pet photo to start.",
                     elem_id="status-msg",
