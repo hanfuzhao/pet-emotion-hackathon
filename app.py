@@ -74,9 +74,9 @@ def predict(image, corruption, severity):
 def build_ui():
     with gr.Blocks(title="Pet Emotion Robustness") as demo:
         gr.Markdown(
-            "# Pet Emotion Classifier — Robustness Demo\n"
+            "# Pet Emotion Robustness Demo\n"
             "Upload a pet photo, pick a corruption, drag the severity slider. "
-            "Watch the augmented model hold its confidence while the baseline drifts."
+            "The augmented model should hold up while the baseline drifts."
         )
         with gr.Row():
             with gr.Column():
@@ -99,9 +99,9 @@ def build_ui():
             trig(predict, [inp, corruption, severity], [preview, aug_out, base_out, status])
 
         gr.Markdown(
-            "Severity 0 is the original photo. As severity rises (blur, low light, occlusion, etc.) "
-            "the baseline's confidence swings; the augmented model stays closer to its clean-image call. "
-            "That gap is what thoughtful augmentation buys you."
+            "Severity 0 is the original photo. As severity rises (blur, low light, occlusion) "
+            "the baseline's confidence swings, while the augmented model stays closer to its "
+            "clean-image call. That gap is what augmentation buys you."
         )
 
     return demo
