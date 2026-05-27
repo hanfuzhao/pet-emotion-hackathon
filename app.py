@@ -63,24 +63,24 @@ def _infer(model, img):
 
 def _render_bars(probs, accent):
     if not probs:
-        return '<div style="color:#999;font-size:14px;padding:8px;">no model loaded</div>'
+        return '<div style="color:var(--body-text-color);opacity:0.6;font-size:14px;padding:8px;">no model loaded</div>'
     ranked = sorted(probs, key=lambda x: -x[1])
     top_class = ranked[0][0]
     rows = []
     for cls, p in ranked:
         pct = int(round(p * 100))
         is_top = cls == top_class
-        bar_color = accent if is_top else "#C5C5C5"
+        bar_color = accent if is_top else "var(--neutral-400)"
         weight = "700" if is_top else "500"
-        text_color = "#111" if is_top else "#444"
+        opacity = "1" if is_top else "0.7"
         label = cls.capitalize()
         rows.append(
             f'<div style="margin-bottom:12px;width:100%;">'
-            f'<div style="display:flex;justify-content:space-between;align-items:center;width:100%;margin-bottom:6px;">'
-            f'<span style="font-size:15px;font-weight:{weight};color:{text_color};">{label}</span>'
-            f'<span style="font-size:15px;font-weight:{weight};color:{text_color};">{pct}%</span>'
+            f'<div style="display:flex;justify-content:space-between;align-items:center;width:100%;margin-bottom:6px;color:var(--body-text-color);opacity:{opacity};">'
+            f'<span style="font-size:15px;font-weight:{weight};">{label}</span>'
+            f'<span style="font-size:15px;font-weight:{weight};">{pct}%</span>'
             f'</div>'
-            f'<div style="background:#EEE;border-radius:5px;height:10px;overflow:hidden;width:100%;">'
+            f'<div style="background:var(--neutral-200);border-radius:5px;height:10px;overflow:hidden;width:100%;">'
             f'<div style="background:{bar_color};height:100%;width:{pct}%;"></div>'
             f'</div>'
             f'</div>'
@@ -161,8 +161,8 @@ CUSTOM_CSS = """
     border: 2px solid transparent;
     margin-top: 0;
 }
-#aug-card { border-color: #5CB85C; background: #F0FBF2; }
-#base-card { border-color: #D9534F; background: #FDF2F2; }
+#aug-card { border-color: #5CB85C; background: rgba(92, 184, 92, 0.08); }
+#base-card { border-color: #D9534F; background: rgba(217, 83, 79, 0.08); }
 
 .model-tag {
     display: inline-block;
@@ -178,7 +178,7 @@ CUSTOM_CSS = """
 .base-tag { background: #D9534F; color: white; }
 
 #status-msg {
-    background: #FFF8E7;
+    background: rgba(255, 217, 61, 0.12);
     border-left: 4px solid #FFD93D;
     padding: 14px 18px;
     border-radius: 8px;
