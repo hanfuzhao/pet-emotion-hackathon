@@ -108,4 +108,4 @@ def build_ui():
 
 
 if __name__ == "__main__":
-    build_ui().launch()
+    build_ui().launch(show_api=False)
