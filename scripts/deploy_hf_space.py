@@ -34,6 +34,10 @@ def deploy(username, space_name, private=False):
         ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
     )
 
+    examples_src = ROOT / "examples"
+    if examples_src.exists():
+        shutil.copytree(examples_src, stage / "examples")
+
     models_dst = stage / "models"
     models_dst.mkdir()
     weights = sorted((ROOT / "models").glob("*.pt"))
