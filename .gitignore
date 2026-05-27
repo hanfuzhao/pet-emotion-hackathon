@@ -22,3 +22,6 @@ models/*.pth
 # Secrets
 kaggle.json
 .env
+
+# Personal
+pitch.md
