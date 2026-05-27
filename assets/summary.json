@@ -1,0 +1,33 @@
+{
+  "baseline_clean_acc": 0.9107142857142857,
+  "baseline_mean_robust_acc": 0.8392857142857141,
+  "augmented_clean_acc": 0.9107142857142857,
+  "augmented_mean_robust_acc": 0.8583333333333332,
+  "delta_mean_robust_acc": 0.01904761904761909,
+  "per_corruption_severity4": {
+    "brightness": {
+      "baseline": 0.6785714285714286,
+      "augmented": 0.8035714285714286
+    },
+    "darkness": {
+      "baseline": 0.8035714285714286,
+      "augmented": 0.8125
+    },
+    "blur": {
+      "baseline": 0.6607142857142857,
+      "augmented": 0.7232142857142857
+    },
+    "rotation": {
+      "baseline": 0.8303571428571429,
+      "augmented": 0.8035714285714286
+    },
+    "jpeg": {
+      "baseline": 0.7053571428571429,
+      "augmented": 0.7589285714285714
+    },
+    "occlusion": {
+      "baseline": 0.8125,
+      "augmented": 0.8035714285714286
+    }
+  }
+}
