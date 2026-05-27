@@ -13,7 +13,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from src.data import PetEmotionDataset, get_transforms, IMAGENET_MEAN, IMAGENET_STD
+from src.data import PetEmotionDataset, get_transforms, IMAGENET_MEAN, IMAGENET_STD, CLASS_NAMES
 from src.evaluate import compare_models, CORRUPTIONS
 
 
@@ -37,7 +37,7 @@ def main():
     for ax in axes.flat:
         img, label = ds[int(rng.integers(len(ds)))]
         ax.imshow(denorm(tx(img)))
-        ax.set_title(["unhappy", "happy"][label])
+        ax.set_title(CLASS_NAMES[label])
         ax.axis("off")
     plt.suptitle("Random samples through the augmented training pipeline")
     plt.tight_layout()

@@ -10,7 +10,7 @@ IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
 IMG_SIZE = 224
 
-CLASS_NAMES = ["unhappy", "happy"]
+CLASS_NAMES = ["angry", "happy", "sad", "other"]
 
 
 def _eval_tx():
@@ -57,9 +57,10 @@ def get_transforms(mode):
 
 
 _LABELS = {
-    "happy": 1,
-    "sad": 0,
     "angry": 0,
+    "happy": 1,
+    "sad": 2,
+    "other": 3,
 }
 
 

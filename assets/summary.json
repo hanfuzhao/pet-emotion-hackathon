@@ -1,33 +1,33 @@
 {
-  "baseline_clean_acc": 0.9107142857142857,
-  "baseline_mean_robust_acc": 0.8392857142857141,
-  "augmented_clean_acc": 0.9107142857142857,
-  "augmented_mean_robust_acc": 0.8583333333333332,
-  "delta_mean_robust_acc": 0.01904761904761909,
+  "baseline_clean_acc": 0.9,
+  "baseline_mean_robust_acc": 0.7573333333333333,
+  "augmented_clean_acc": 0.8533333333333334,
+  "augmented_mean_robust_acc": 0.7580000000000001,
+  "delta_mean_robust_acc": 0.0006666666666668153,
   "per_corruption_severity4": {
     "brightness": {
-      "baseline": 0.6785714285714286,
-      "augmented": 0.8035714285714286
+      "baseline": 0.5933333333333334,
+      "augmented": 0.68
     },
     "darkness": {
-      "baseline": 0.8035714285714286,
-      "augmented": 0.8125
+      "baseline": 0.7,
+      "augmented": 0.7666666666666667
     },
     "blur": {
-      "baseline": 0.6607142857142857,
-      "augmented": 0.7232142857142857
+      "baseline": 0.29333333333333333,
+      "augmented": 0.38
     },
     "rotation": {
-      "baseline": 0.8303571428571429,
-      "augmented": 0.8035714285714286
+      "baseline": 0.7066666666666667,
+      "augmented": 0.66
     },
     "jpeg": {
-      "baseline": 0.7053571428571429,
-      "augmented": 0.7589285714285714
+      "baseline": 0.44666666666666666,
+      "augmented": 0.5133333333333333
     },
     "occlusion": {
-      "baseline": 0.8125,
-      "augmented": 0.8035714285714286
+      "baseline": 0.7133333333333334,
+      "augmented": 0.6933333333333334
     }
   }
 }

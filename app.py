@@ -90,8 +90,8 @@ def build_ui():
                 btn = gr.Button("Predict", variant="primary")
             with gr.Column():
                 preview = gr.Image(label="Model input (after corruption)", height=320)
-                aug_out = gr.Label(label="Augmented model")
-                base_out = gr.Label(label="Baseline model")
+                aug_out = gr.Label(label="Augmented model", num_top_classes=4)
+                base_out = gr.Label(label="Baseline model", num_top_classes=4)
                 status = gr.Markdown()
 
         btn.click(predict, [inp, corruption, severity], [preview, aug_out, base_out, status])
