@@ -48,7 +48,10 @@ def deploy(username: str, space_name: str, private: bool = False) -> str:
     shutil.copy(ROOT / "README.md", stage_dir / "README.md")
     shutil.copy(ROOT / "app.py", stage_dir / "app.py")
     shutil.copy(ROOT / "requirements.txt", stage_dir / "requirements.txt")
-    shutil.copytree(ROOT / "src", stage_dir / "src")
+    shutil.copytree(
+        ROOT / "src", stage_dir / "src",
+        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+    )
 
     models_src = ROOT / "models"
     models_dst = stage_dir / "models"
