@@ -4,6 +4,23 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
+import gradio_client.utils as _gcu
+_orig_get_type = _gcu.get_type
+_orig_jsonschema = _gcu._json_schema_to_python_type
+
+def _safe_get_type(schema):
+    if isinstance(schema, bool):
+        return "Any" if schema else "None"
+    return _orig_get_type(schema)
+
+def _safe_jsonschema(schema, defs=None):
+    if isinstance(schema, bool):
+        return "Any" if schema else "None"
+    return _orig_jsonschema(schema, defs)
+
+_gcu.get_type = _safe_get_type
+_gcu._json_schema_to_python_type = _safe_jsonschema
+
 import gradio as gr
 import torch
 import torch.nn.functional as F
