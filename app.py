@@ -63,27 +63,29 @@ def _infer(model, img):
 
 def _render_bars(probs, accent):
     if not probs:
-        return '<div style="color:#999;font-size:13px;padding:8px;">no model loaded</div>'
+        return '<div style="color:#999;font-size:14px;padding:8px;">no model loaded</div>'
     ranked = sorted(probs, key=lambda x: -x[1])
     top_class = ranked[0][0]
     rows = []
     for cls, p in ranked:
         pct = int(round(p * 100))
         is_top = cls == top_class
-        bar_color = accent if is_top else "#D5D5D5"
-        text_weight = "700" if is_top else "500"
-        rows.append(f"""
-            <div style="margin-bottom:10px;">
-              <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:{text_weight};color:#333;margin-bottom:4px;text-transform:capitalize;">
-                <span>{cls}</span>
-                <span>{pct}%</span>
-              </div>
-              <div style="background:#EEE;border-radius:4px;height:8px;overflow:hidden;">
-                <div style="background:{bar_color};height:100%;width:{pct}%;transition:width 0.3s;"></div>
-              </div>
-            </div>
-        """)
-    return f'<div style="padding:8px 4px;">{"".join(rows)}</div>'
+        bar_color = accent if is_top else "#C5C5C5"
+        weight = "700" if is_top else "500"
+        text_color = "#111" if is_top else "#444"
+        label = cls.capitalize()
+        rows.append(
+            f'<div style="margin-bottom:12px;width:100%;">'
+            f'<div style="display:flex;justify-content:space-between;align-items:center;width:100%;margin-bottom:6px;">'
+            f'<span style="font-size:15px;font-weight:{weight};color:{text_color};">{label}</span>'
+            f'<span style="font-size:15px;font-weight:{weight};color:{text_color};">{pct}%</span>'
+            f'</div>'
+            f'<div style="background:#EEE;border-radius:5px;height:10px;overflow:hidden;width:100%;">'
+            f'<div style="background:{bar_color};height:100%;width:{pct}%;"></div>'
+            f'</div>'
+            f'</div>'
+        )
+    return f'<div style="padding:6px 2px;width:100%;">{"".join(rows)}</div>'
 
 
 def predict(image, corruption, severity):
