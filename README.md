@@ -64,8 +64,7 @@ hackathon1/
 │   ├── train.py                # training loop
 │   └── evaluate.py             # corruption-based robustness eval
 ├── models/                     # weights (gitignored, ~45 MB each)
-├── assets/                     # plots + result JSON
-└── pitch.md                    # 5-minute pitch outline
+└── assets/                     # plots + result JSON
 ```
 
 ## How to run
@@ -133,7 +132,7 @@ Trunk-based with feature branches and `--no-ff` merges, so the history graphs cl
 feat/data-and-augmentation   feat/transfer-learning      feat/robustness-eval
 feat/training-notebook        feat/gradio-app             feat/training-results
 feat/mps-support              fix/space-py313             fix/upgrade-gradio5
-docs/pitch                    docs/real-results           docs/live-links
+fix/pin-python311             docs/real-results           docs/live-links
 ```
 
 Each branch was merged with `--no-ff` so the merge commits are visible in `git log --graph`.

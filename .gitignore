@@ -23,7 +23,7 @@ models/*.pth
 kaggle.json
 .env
 
-# Personal
+# Local-only notes / drafts
+*.pptx
 pitch.md
-assets/pitch.pptx
 scripts/build_pitch_pptx.py
